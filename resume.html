@@ -1,0 +1,257 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Резюме - Головкина Анна</title>
+    <style>
+        body {
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            margin: 0 auto;
+            max-width: 800px;
+            padding: 20px;
+            line-height: 1.4;
+            color: #333;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+        .header-text {
+            flex: 1;
+        }
+        .header-text h1 {
+            font-size: 2.5em;
+            margin: 0;
+            font-variant: small-caps;
+        }
+        .header-text p {
+            margin: 5px 0;
+        }
+        .header img {
+            width: 100px;
+            height: 120px;
+            object-fit: cover;
+            border: 1px solid #ccc;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section h2 {
+            font-size: 1.5em;
+            border-bottom: 2px solid #000;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+            font-variant: small-caps;
+        }
+        .subheading {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .subheading span {
+            font-style: italic;
+            font-size: 0.9em;
+        }
+        ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        ul li {
+            margin-bottom: 5px;
+        }
+        .hackathons ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .hackathons ul li {
+            margin-bottom: 10px;
+        }
+        .hackathons ul li strong {
+            display: inline-block;
+            width: 200px;
+        }
+        .skills ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .skills ul li {
+            margin-bottom: 10px;
+        }
+        .skills ul li strong {
+            display: inline-block;
+            width: 150px;
+        }
+        a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-text">
+            <h1>Головкина Анна</h1>
+            <p>+7 914 841-40-33 | 
+                <a href="mailto:streyaastra@yandex.ru">streyaastra@yandex.ru</a> | 
+                <a href="https://t.me/astralbliss">tg: @astralbliss</a>
+            </p>
+        </div>
+        <img src="Фото_паспортное.jpg" alt="Фото">
+    </div>
+
+    <div class="section">
+        <h2>Образование</h2>
+        <div class="subheading">
+            <span>Финансовый университет при правительстве Российской Федерации</span>
+            <span>Москва</span>
+        </div>
+        <div class="subheading">
+            <span>Прикладная математика и информатика 01.03.02</span>
+            <span>2022–2026</span>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Опыт работы</h2>
+        <div class="subheading">
+            <span>Фриланс</span>
+            <span>сентябрь 2022 – </span>
+        </div>
+        <div class="subheading">
+            <span>Репетиторство и выполнение прочих студенческих работ</span>
+            <span></span>
+        </div>
+        <ul>
+            <li>Преподавание языка программирования Python студентам (в т.ч. гуманитарных университетов)</li>
+            <li>Выполнение работ по эконометрике, машинному обучению, визуализации данных на заказ</li>
+        </ul>
+        <div class="subheading">
+            <span>Специалист по сбору данных</span>
+            <span>октябрь 2022 – декабрь 2022</span>
+        </div>
+        <div class="subheading">
+            <span>Лаборатория Финансового университета</span>
+            <span></span>
+        </div>
+        <ul>
+            <li>Поиск и сбор данных в открытых источниках по специфическим запросам, необходимых для исследований</li>
+            <li>Анализ предметной области исследования</li>
+        </ul>
+    </div>
+
+    <div class="section hackathons">
+        <h2>Иной опыт (Хакатоны)</h2>
+        <ul>
+            <li><strong>Alfa x FinU Hack (2 место в финале)</strong> Исследование проблемы пропусков в данных и её решение; поиск подходящих моделей и их настройка; визуализации</li>
+            <li><strong>IT Purple Hack (финал)</strong> Оптимизация моделей, подбор гиперпараметров; поиск решения проблемы избыточности данных; визуализации</li>
+            <li><strong>AlfaHack 2024 (финал)</strong> Подбор гиперпараметров; оценка моделей; частотный анализ признаков; оптимизация гиперпараметров</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Проекты</h2>
+        <div class="subheading">
+            <span><strong>RAG</strong> | Python, API MistralAi, StreamlitCloud</span>
+            <span></span>
+        </div>
+        <ul>
+            <li>Разработка небольшого RAG поверх лендингов karpov.courses с деплоем в StreamlitCloud для поиска подходящих по пользовательскому запросу курсов</li>
+        </ul>
+        <div class="subheading">
+            <span><strong>Дообучение YandexGPT для узконаправленных запросов</strong> | YandexGPT API, Python</span>
+            <span></span>
+        </div>
+        <ul>
+            <li>Парсинг сообщений из телеграм-чата</li>
+            <li>Дообучение модели на основе размеченных пар вопрос-ответ</li>
+        </ul>
+        <div class="subheading">
+            <span><strong>Онлайн сентимент-анализ новостных статей</strong> | Python, MistralAI, sklearn, pymorphy, transformers, natasha, RuRoBERTa</span>
+            <span></span>
+        </div>
+        <ul>
+            <li>Парсинг RIA-новостей</li>
+            <li>Разметка обучающего и тестового набора данных с помощью MistralAI</li>
+            <li>Дообучение модели ai-forever/ruRoberta-large на классификацию тональности заголовка новости, сравнение с классическими ML алгоритмами</li>
+            <li>Отслеживание сдвигов в тональности относительно именованных сущностей (тест Колмогорова-Смирнова и KL Divergence) и запуск переобучения в случае необходимости</li>
+        </ul>
+        <div class="subheading">
+            <span><strong>QA-система, интегрированная в telegram</strong> | Python, Multilingual E5, FAISS, python-telegram-bot, pymorphy, nltk, ...</span>
+            <span></span>
+        </div>
+        <ul>
+            <li>Предобработка вопросов для улучшения качества системы</li>
+            <li>FAISS-индекс на базе эмбеддингов вопросов</li>
+            <li>Интеграция системы в telegram-бота с возможностью оценивать ответ бота</li>
+            <li>Журналирование вопросов, ответов и оценок пользователей</li>
+        </ul>
+        <div class="subheading">
+            <span><strong>Телеграм-бот для удобного списка желаний</strong> | Python, sqlite, python-telegram-bot</span>
+            <span></span>
+        </div>
+        <ul>
+            <li>Бот с базой данных SQLite для управления списком желаний: бронирование, отмена бронирования и редактирование статуса подарков</li>
+            <li>Взаимодействие пользователей через inline-кнопки (логика бронирования)</li>
+            <li>Автоматическая публикация желаний в тематические ветки чата</li>
+        </ul>
+    </div>
+
+    <div class="section skills">
+        <h2>Tech Stack</h2>
+        <ul>
+            <li><strong>Что знаю:</strong> Python, SQL (Postgres), HTML/CSS</li>
+            <li><strong>Пользовалась:</strong> Git, Dask, Streamlit, HuggingFace, WandB, PyTorch Lightning, NLTK, Spacy, PyMorphy3, OpenCV, Pillow</li>
+            <li><strong>Библиотеки:</strong> pandas, numpy, scikit-learn, scipy, statsmodels, beautifulsoup, matplotlib, seaborn, pytorch, networkx, catboost, optune, lightGBM, XGBoost, torchvision</li>
+            <li><strong>Что еще?:</strong> LaTeX, Microsoft Office, Figma, Adobe Photoshop</li>
+            <li><strong>Языки:</strong> Английский на уровне B1+ (читаю документацию в оригинале)</li>
+            <li><strong>Софты:</strong> Исполнительность, командный игрок, умение идти на компромиссы, тщательный подход к работе, умение отвечать на вопросы самостоятельно, самоорганизация, большой опыт публичных выступлений</li>
+        </ul>
+    </div>
+</body>
+</html>
